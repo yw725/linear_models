@@ -1,0 +1,86 @@
+---
+title: "linear_models"
+author: "Yuning Wang"
+date: "11/7/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(p8105.datasets)
+
+set.seed(1)
+```
+
+Use aribnb dataset practice linear modles
+
+```{r}
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb %>% 
+  mutate(stars = review_scores_location / 2) %>% 
+  rename(
+    boro = neighbourhood_group,
+    neighborhood = neighbourhood) %>% 
+  filter(boro != "Staten Island") %>% 
+  select(price, stars, boro, neighborhood, room_type)
+```
+
+Fit a first linear model
+
+```{r}
+fit = lm(price ~ stars + boro, data = nyc_airbnb)
+```
+
+```{r}
+fit
+
+summary(fit)
+#restract the coefficient
+coef(fit)
+summary(fit)$coef
+
+```
+
+tidy the results instead!
+
+```{r}
+fit %>% 
+  broom::tidy() %>% 
+  mutate(term = str_replace(term, "boro", "Boro: ")) %>% 
+  knitr::kable(digits = 3)
+# look at others included in the test
+fit %>% 
+  broom::glance()
+```
+
+
+## Take a look at factors
+
+```{r}
+nyc_airbnb = nyc_airbnb %>% 
+  mutate(
+    boro = fct_infreq(boro),
+    room_type = fct_infreq(room_type)
+  )
+# look the same but have been ordered in the inside
+```
+
+
+refit the last model
+
+```{r}
+fit = lm(price ~ stars + boro, data = nyc_airbnb)
+
+fit %>% 
+  broom::tidy()
+```
+
+
+
+
+
+
