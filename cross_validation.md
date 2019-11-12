@@ -146,3 +146,40 @@ cv_results %>%
 ```
 
 ![](cross_validation_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+## Example
+
+``` r
+child_growth = read_csv("./data/nepalese_children.csv")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   age = col_double(),
+    ##   sex = col_double(),
+    ##   weight = col_double(),
+    ##   height = col_double(),
+    ##   armc = col_double()
+    ## )
+
+``` r
+child_growth %>% 
+  ggplot(aes(x = weight, y = armc)) + 
+  geom_point(alpha = .5)
+```
+
+![](cross_validation_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+Add change point term
+
+``` r
+child_growth =
+  child_growth %>% 
+  mutate(weight_cp = (weight > 7) * (weight - 7))
+```
+
+``` r
+linear_mod    = lm(armc ~ weight, data = child_growth)
+pwl_mod    = lm(armc ~ weight + weight_cp, data = child_growth)
+smooth_mod = gam(armc ~ s(weight), data = child_growth)
+```

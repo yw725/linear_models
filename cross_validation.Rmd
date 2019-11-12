@@ -131,8 +131,29 @@ cv_results %>%
   ggplot(aes(x = model, y = rmse)) + geom_violin()
 ```
 
+## Example
 
+```{r}
+child_growth = read_csv("./data/nepalese_children.csv")
 
+child_growth %>% 
+  ggplot(aes(x = weight, y = armc)) + 
+  geom_point(alpha = .5)
+```
+
+Add change point term
+
+```{r}
+child_growth =
+  child_growth %>% 
+  mutate(weight_cp = (weight > 7) * (weight - 7))
+```
+
+```{r}
+linear_mod    = lm(armc ~ weight, data = child_growth)
+pwl_mod    = lm(armc ~ weight + weight_cp, data = child_growth)
+smooth_mod = gam(armc ~ s(weight), data = child_growth)
+```
 
 
 
